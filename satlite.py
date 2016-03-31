@@ -22,7 +22,7 @@ from colorama import *
 from shutil import copyfile
 from os.path import expanduser
 
-LOCAL_HOME = '/home/suvigya/Standalone'
+LOCAL_HOME = '/home/suvigya/SATLite'
 
 class SATLite():
     def __init__(self):
@@ -81,16 +81,16 @@ class SATLite():
         if(stage == 1):
             #-------------------------------------------------------------------------------------------------
             #Create directories
-            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'mkdir -p Standalone/Output'])
+            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'mkdir -p SATLite/Output'])
             stdout, stderr = p.communicate()
     
-            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'mkdir -p Standalone/user_files'])
+            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'mkdir -p SATLite/user_files'])
             stdout, stderr = p.communicate()
 
             for f in inp_files:
                 #Transfer files without argument
                 if ('=' not in f and '/' in f):
-                    p = subprocess.Popen(['scp','%s'%f , '%s@stampede.tacc.utexas.edu:/%s/Standalone/user_files'%(self.uname,self.wdir)],
+                    p = subprocess.Popen(['scp','%s'%f , '%s@stampede.tacc.utexas.edu:/%s/SATLite/user_files'%(self.uname,self.wdir)],
                                             stdin=subprocess.PIPE,
                                             stdout=subprocess.PIPE,
                                             stderr=subprocess.PIPE)
@@ -102,7 +102,7 @@ class SATLite():
                     #transfer file with argument
                     argument,fname = f.split('=')
                     if not fname.isdigit():
-                        p = subprocess.Popen(['scp','%s'%fname , '%s@stampede.tacc.utexas.edu:/%s/Standalone/user_files'%(self.uname,self.wdir)],
+                        p = subprocess.Popen(['scp','%s'%fname , '%s@stampede.tacc.utexas.edu:/%s/SATLite/user_files'%(self.uname,self.wdir)],
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE)
@@ -113,7 +113,7 @@ class SATLite():
                         if "*" in fname:
                             for files in glob.glob(fname):
                                 #print files
-                                p = subprocess.Popen(['scp','%s'%files , '%s@stampede.tacc.utexas.edu:/%s/Standalone/user_files'%(self.uname,self.wdir)],
+                                p = subprocess.Popen(['scp','%s'%files , '%s@stampede.tacc.utexas.edu:/%s/SATLite/user_files'%(self.uname,self.wdir)],
                                              stdin=subprocess.PIPE,
                                              stdout=subprocess.PIPE,
                                              stderr=subprocess.PIPE)
@@ -121,7 +121,7 @@ class SATLite():
                                 if stderr is "":
                                     print(files+' transferred')
 
-            p = subprocess.Popen(['scp', '%s/slurm_script.slurm'%LOCAL_HOME , '%s@stampede.tacc.utexas.edu:/%s/Standalone/'%(self.uname,self.wdir)],
+            p = subprocess.Popen(['scp', '%s/slurm_script.slurm'%LOCAL_HOME , '%s@stampede.tacc.utexas.edu:/%s/SATLite/'%(self.uname,self.wdir)],
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -132,16 +132,16 @@ class SATLite():
     def generateSlurm(self,inp_files):
         self.loadConfig()
 
-        pwd = "%s/Standalone"%self.wdir
-        job_name = "BlackboxTest"
-        output = "BlackboxTest.out"
+        pwd = "%s/SATLite"%self.wdir
+        job_name = "SATLite"
+        output = "SATLite.out"
         error = None
         project = None
 
         slurm_script = "#!/bin/sh\n\n"
         slurm_script += '#BATCH -J %s\n' % job_name
-        slurm_script += '#SBATCH -o /home1/03894/tg831932/Standalone/Output/%s\n' % (output)
-        slurm_script += '#SBATCH -e /home1/03894/tg831932/Standalone/Output/STDERR\n'
+        slurm_script += '#SBATCH -o /home1/03894/tg831932/SATLite/Output/%s\n' % (output)
+        slurm_script += '#SBATCH -e /home1/03894/tg831932/SATLite/Output/STDERR\n'
         slurm_script += '#SBATCH -n 1\n'
         slurm_script += '#SBATCH -p %s\n' %self.queue
         slurm_script += '#SBATCH -t %s\n' % self.wall_time_limit
@@ -191,7 +191,7 @@ class SATLite():
     """
     def loadConfig(self):
         home = expanduser("~")
-        self.home = '%s/Standalone'%home
+        self.home = '%s/SATLite'%home
         try:
             with open('%s/configs/machine_config.json'%LOCAL_HOME) as data_file:
                 config = json.load(data_file)
@@ -232,7 +232,7 @@ class SATLite():
     def job_submit(self):
         #Submit job
         print(Fore.GREEN+"Submitting slurm job"+Fore.RESET)
-        p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'sbatch %s/Standalone/slurm_script.slurm'%self.wdir],
+        p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'sbatch %s/SATLite/slurm_script.slurm'%self.wdir],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
@@ -276,7 +276,7 @@ class SATLite():
     def error_check(self):
         if(self.kernel_name == "amber" or self.kernel_name == "coco" or self.kernel_name == "lsdmap"):
             print(Fore.GREEN+"checking error in "+self.kernel_name+Fore.RESET)
-            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'cat %s/Standalone/Output/STDERR'%self.wdir],
+            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'cat %s/SATLite/Output/STDERR'%self.wdir],
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -310,7 +310,7 @@ class SATLite():
             os.remove(f)
 
         print "Transfer output to local machine"
-        p = subprocess.Popen(['scp', '-r', '%s@stampede.tacc.utexas.edu:/%s/Standalone/Output/'%(self.uname,self.wdir), '%s/'%LOCAL_HOME ],
+        p = subprocess.Popen(['scp', '-r', '%s@stampede.tacc.utexas.edu:/%s/SATLite/Output/'%(self.uname,self.wdir), '%s/'%LOCAL_HOME ],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
@@ -323,14 +323,14 @@ class SATLite():
 
         #-----------------------------------------------------------------------------------------------------------
         #Clean up remote machine
-        command =  ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'chmod', '-R','a+rX','%s/Standalone/'%self.wdir]
+        command =  ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'chmod', '-R','a+rX','%s/SATLite/'%self.wdir]
         p = subprocess.Popen(command,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         
-        command =  ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'rm', '-r','%s/Standalone/'%self.wdir]
+        command =  ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'rm', '-r','%s/SATLite/'%self.wdir]
         p = subprocess.Popen(command,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
