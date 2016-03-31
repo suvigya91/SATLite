@@ -1,0 +1,11 @@
+#-------------LSDmap specific environment and modules for stampede---------------
+
+stampede_environment = ["export PYTHONPATH=/home1/03036/jp43/.local/lib/python2.7/site-packages", 
+			"export PATH=/home1/03036/jp43/.local/bin:$PATH"]
+
+stampede_module	     = ["module load TACC",
+			"module load -intel +intel/14.0.1.106",
+			"module load python/2.7.6"]
+
+output_file	     = None
+

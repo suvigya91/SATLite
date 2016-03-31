@@ -1,0 +1,10 @@
+#-------------Amber specific environment and modules for stampede---------------
+
+stampede_environment	= []
+stampede_module		= ["module load TACC",
+                           "module load intel/13.0.2.146",
+                           "module load python/2.7.9",
+                           "module load netcdf/4.3.2",
+                           "module load hdf5/1.8.13"]
+
+output_file		= ["-o=min.out"]

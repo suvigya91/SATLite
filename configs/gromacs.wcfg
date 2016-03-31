@@ -1,0 +1,10 @@
+#-------------Gromacs specific environment and modules for stampede---------------
+
+stampede_environment = []
+stampede_module	     = ["module load TACC",
+			"module load intel/15.0.2",
+			"module load boost",
+			"module load cxx11",
+			"module load gromacs",
+			"module load python"]
+output_file	     = ["--out=out.gro"]
