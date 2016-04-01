@@ -42,13 +42,15 @@ class SATLite():
         self.inp_file = None
         self.output_file = None
         self.user_modules = None
+        self.runtime_range = None
 
-    def set_attribute(self,name,resource,arguments,exe=None,modules = None):
+    def set_attribute(self,name,resource,arguments,exe=None,modules = None,runtime = None):
         self.kernel_name = name
         self.resource = resource
         self.inp_file = arguments
         self.user_modules = modules
         self.exe = exe
+        self.runtime_range = runtime
         
     ###################################################################################################
     def copyFilesToRemote(self, inp_files, stage, module):
@@ -121,7 +123,7 @@ class SATLite():
                                 if stderr is "":
                                     print(files+' transferred')
 
-            p = subprocess.Popen(['scp', '%s/slurm_script.slurm'%LOCAL_HOME , '%s@stampede.tacc.utexas.edu:/%s/SATLite/'%(self.uname,self.wdir)],
+            p = subprocess.Popen(['scp', '%s/SATLite.slurm'%LOCAL_HOME , '%s@stampede.tacc.utexas.edu:/%s/SATLite/'%(self.uname,self.wdir)],
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -216,7 +218,7 @@ class SATLite():
             if self.user_modules is None:    
                 self.pre_exec = Kconfig.stampede_module
             else:
-                self.pre_exec = user_modules
+                self.pre_exec = self.user_modules
                 
             self.environment = Kconfig.stampede_environment
             #self.module_test_file = Kconfig.module_test_file
@@ -232,7 +234,7 @@ class SATLite():
     def job_submit(self):
         #Submit job
         print(Fore.GREEN+"Submitting slurm job"+Fore.RESET)
-        p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'sbatch %s/SATLite/slurm_script.slurm'%self.wdir],
+        p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'sbatch %s/SATLite/SATLite.slurm'%self.wdir],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
@@ -273,6 +275,10 @@ class SATLite():
 
 
     #---------------------------------------------------------------------------------------------------------------
+    def get_sec(self,s):
+        l = s.split(':')
+        return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])
+
     def error_check(self):
         if(self.kernel_name == "amber" or self.kernel_name == "coco" or self.kernel_name == "lsdmap"):
             print(Fore.GREEN+"checking error in "+self.kernel_name+Fore.RESET)
@@ -300,7 +306,30 @@ class SATLite():
                         self.exitcode = 1
                     elif "ExitCode=0" in line:
                         self.exitcode = 0
-
+                        
+            if((self.exitcode!=1) and (self.runtime_range is not None)):
+                command = ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'scontrol show job', self.job_id]
+                p = subprocess.Popen(command,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+                stdout, stderr = p.communicate()
+                for line in stdout.split("\n"):
+                    if "RunTime" in line:
+                        temp = line.split(" ")
+                        for x in temp:
+                            if "RunTime" in x:
+                                rtime = x.split('=')[1]
+                                break
+                actual_runtime = self.get_sec(rtime)
+                if self.get_sec(self.runtime_range[0]) <= actual_runtime <= self.get_sec(self.runtime_range[1]):
+                    self.exitcode = 0
+                else:
+                    print(Fore.RED+"Execution failed to complete in estimated time"+Fore.RESET)
+                    self.exitcode = 1
+                
+                print actual_runtime
+                        
 
     #------------------------------------------------------------------------------------------------------------------
     def cleanup(self):
@@ -361,7 +390,7 @@ class SATLite():
         print(Fore.GREEN+"******************************************"+Fore.RESET)
         slurm_script = self.generateSlurm(self.inp_file)
        
-        target = open('slurm_script.slurm','w')
+        target = open('SATLite.slurm','w')
         target.write(slurm_script)
         target.close()
 
@@ -375,4 +404,6 @@ class SATLite():
             sys.exit(1)
         else:
             print(Fore.GREEN+"The execution is successful, Check Output folder for output."+Fore.RESET)
+
+        
             

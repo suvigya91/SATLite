@@ -26,6 +26,7 @@ if __name__ == "__main__":
                                "module load python/2.7.9",
                                "module load netcdf/4.3.2",
                                "module load hdf5/1.8.13"]
+                    #runtime = ["0:0:1","0:0:15"]
                     )
     test.run()
 

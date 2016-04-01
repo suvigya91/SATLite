@@ -3,20 +3,20 @@
           Amber 12 SANDER                              2012
           -------------------------------------------------------
 
-| Run on 03/30/2016 at 20:11:25
+| Run on 04/01/2016 at 12:43:32
   [-O]verwriting output
 
 File Assignments:
-|  MDIN: /home1/03894/tg831932/Standalone/user_files/min.in                    
-| MDOUT: /home1/03894/tg831932/Standalone/Output/min.out                       
-|INPCRD: /home1/03894/tg831932/Standalone/user_files/penta.crd                 
-|  PARM: /home1/03894/tg831932/Standalone/user_files/penta.top                 
-|RESTRT: /home1/03894/tg831932/Standalone/user_files/md.crd                    
-|  REFC: /home1/03894/tg831932/Standalone/user_files/min.crd                   
+|  MDIN: /home1/03894/tg831932/SATLite/user_files/min.in                       
+| MDOUT: /home1/03894/tg831932/SATLite/Output/min.out                          
+|INPCRD: /home1/03894/tg831932/SATLite/user_files/penta.crd                    
+|  PARM: /home1/03894/tg831932/SATLite/user_files/penta.top                    
+|RESTRT: /home1/03894/tg831932/SATLite/user_files/md.crd                       
+|  REFC: /home1/03894/tg831932/SATLite/user_files/min.crd                      
 | MDVEL: mdvel                                                                 
 |  MDEN: mden                                                                  
 | MDCRD: mdcrd                                                                 
-|MDINFO: /home1/03894/tg831932/Standalone/user_files/min.inf                   
+|MDINFO: /home1/03894/tg831932/SATLite/user_files/min.inf                      
 |  MTMD: mtmd                                                                  
 |INPDIP: inpdip                                                                
 |RSTDIP: rstdip                                                                
@@ -269,21 +269,21 @@ ACE
    5.  TIMINGS
 --------------------------------------------------------------------------------
 
-|    Read coords time           0.00 ( 0.94% of Total)
-|    Fast Water setup           0.00 ( 0.02% of Total)
-|                Calc gb radii              0.03 (23.87% of Gen B)
-|                Calc gb diag               0.05 (36.57% of Gen B)
-|                Calc gb off-diag           0.05 (39.40% of Gen B)
-|                Other                      0.00 ( 0.16% of Gen B)
+|    Read coords time           0.00 ( 0.69% of Total)
+|    Fast Water setup           0.00 ( 0.01% of Total)
+|                Calc gb radii              0.03 (23.85% of Gen B)
+|                Calc gb diag               0.05 (36.63% of Gen B)
+|                Calc gb off-diag           0.05 (39.37% of Gen B)
+|                Other                      0.00 ( 0.15% of Gen B)
 |             Gen Born time              0.13 (100.0% of Nonbo)
 |             IPS excludes               0.00 ( 0.02% of Nonbo)
-|          Nonbond force              0.13 (89.13% of Force)
-|          Bond/Angle/Dihedral        0.02 (10.45% of Force)
-|          Other                      0.00 ( 0.42% of Force)
+|          Nonbond force              0.13 (89.26% of Force)
+|          Bond/Angle/Dihedral        0.02 (10.32% of Force)
+|          Other                      0.00 ( 0.43% of Force)
 |       Force time                 0.15 (100.0% of Runmd)
-|    Runmd Time                 0.15 (78.63% of Total)
-|    Other                      0.04 (20.41% of Total)
-| Total time                 0.19 (100.0% of ALL  )
+|    Runmd Time                 0.15 (56.90% of Total)
+|    Other                      0.11 (42.39% of Total)
+| Total time                 0.26 (100.0% of ALL  )
 
 | Highest rstack allocated:          0
 | Highest istack allocated:          0
@@ -291,11 +291,11 @@ ACE
 | Final Performance Info:
 | -----------------------------------------------------
 | Average timings for all steps:
-|     Elapsed(s) =       0.17 Per Step(ms) =     167.79
-|         ns/day =       0.51   seconds/ns =  167793.99
+|     Elapsed(s) =       0.24 Per Step(ms) =     242.26
+|         ns/day =       0.36   seconds/ns =  242260.99
 | -----------------------------------------------------
 
-|           Job began  at 20:11:25.534  on 03/30/2016
-|           Setup done at 20:11:25.557  on 03/30/2016
-|           Run   done at 20:11:25.724  on 03/30/2016
+|           Job began  at 12:43:32.010  on 04/01/2016
+|           Setup done at 12:43:32.032  on 04/01/2016
+|           Run   done at 12:43:32.273  on 04/01/2016
 |     wallclock() was called    9029 times
