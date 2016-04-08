@@ -280,56 +280,68 @@ class SATLite():
         return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])
 
     def error_check(self):
-        if(self.kernel_name == "amber" or self.kernel_name == "coco" or self.kernel_name == "lsdmap"):
-            print(Fore.GREEN+"checking error in "+self.kernel_name+Fore.RESET)
-            p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'cat %s/SATLite/Output/STDERR'%self.wdir],
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
-            #exitcode = 0
-            
-            for line in stdout.split("\n"):
-                if (("error" in line) or ("Error" in line)):
-                    self.exitcode = 1
-                    break
+#        if(self.kernel_name == "amber" or self.kernel_name == "coco" or self.kernel_name == "lsdmap"):
+        print(Fore.GREEN+"checking error in "+self.kernel_name+Fore.RESET)
+        p = subprocess.Popen(['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'cat %s/SATLite/Output/STDERR'%self.wdir],
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        #exitcode = 0
+        
+        for line in stdout.split("\n"):
+            if ((("error" in line.lower()) and self.kernel_name != "gromacs") or \
+                ((("Lmod has detected the following error" in line) or \
+                  ("gmx: command not found" in line))and self.kernel_name =="gromacs")):
+                self.exitcode = 1
+                break
 
-            if(self.exitcode != 1):
-                command = ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'scontrol show job', self.job_id]
-                p = subprocess.Popen(command,
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-                stdout, stderr = p.communicate()
-                for line in stdout.split("\n"):
-                    if "ExitCode=1" in line:
-                        self.exitcode = 1
-                    elif "ExitCode=0" in line:
-                        self.exitcode = 0
-                        
-            if((self.exitcode!=1) and (self.runtime_range is not None)):
-                command = ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'scontrol show job', self.job_id]
-                p = subprocess.Popen(command,
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-                stdout, stderr = p.communicate()
-                for line in stdout.split("\n"):
-                    if "RunTime" in line:
-                        temp = line.split(" ")
-                        for x in temp:
-                            if "RunTime" in x:
-                                rtime = x.split('=')[1]
-                                break
-                actual_runtime = self.get_sec(rtime)
-                if self.get_sec(self.runtime_range[0]) <= actual_runtime <= self.get_sec(self.runtime_range[1]):
-                    self.exitcode = 0
-                else:
-                    print(Fore.RED+"Execution failed to complete in estimated time"+Fore.RESET)
-                    self.exitcode = 1
-                
-                print actual_runtime
-                        
+        if(self.exitcode != 1):
+            command = ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'scontrol show job', self.job_id]
+            p = subprocess.Popen(command,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            #print stdout
+            for line in stdout.split("\n"):
+                if "ExitCode=" in line:
+                    temp = line.split(" ")
+                    #print "temp:",temp
+                    for x in temp:
+                        #print "x:",x
+                        if "ExitCode=" in x:
+                            exitcode = re.split('[= :]',x)
+                            self.exitcode = int(exitcode[1])
+                            break
+                #if "ExitCode=1" in line:
+                #    self.exitcode = 1
+                #elif "ExitCode=0" in line:
+                #    self.exitcode = 0
+                    
+        if((self.exitcode!=1) and (self.runtime_range is not None)):
+            command = ['ssh','%s@stampede.tacc.utexas.edu'%self.uname,'scontrol show job', self.job_id]
+            p = subprocess.Popen(command,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            for line in stdout.split("\n"):
+                if "RunTime" in line:
+                    temp = line.split(" ")
+                    for x in temp:
+                        if "RunTime" in x:
+                            rtime = x.split('=')[1]
+                            break
+            actual_runtime = self.get_sec(rtime)
+            if self.get_sec(self.runtime_range[0]) <= actual_runtime <= self.get_sec(self.runtime_range[1]):
+                self.exitcode = 0
+            else:
+                print(Fore.RED+"Execution failed to complete in estimated time"+Fore.RESET)
+                self.exitcode = 1
+            
+            print actual_runtime
+                    
 
     #------------------------------------------------------------------------------------------------------------------
     def cleanup(self):
@@ -399,7 +411,7 @@ class SATLite():
         self.job_check()
         self.error_check()
         self.cleanup()
-        if(self.exitcode == 1):
+        if(self.exitcode > 0):
             print(Fore.RED+"Execution failed, Check STDERR file"+Fore.RESET)
             sys.exit(1)
         else:
