@@ -7,6 +7,7 @@
         	},
         	"xsede.stampede":{
                 	"working_dir" : "${HOME}",
+			"resource_url": "stampede.tacc.utexas.edu",
 			"wall_time"   : "00:10:00",
 	    		"email"       : "suvigya91@gmail.com",
             		"project"     : "TG-MCB090174",
