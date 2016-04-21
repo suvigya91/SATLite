@@ -44,8 +44,7 @@ Arguments
 ----------
 The list of input files specific to the scientific tools along with the arguments are provided in a specific format as shown in the example below.
 
-			``arguments = ['argument1 = input_file1',``
-					``'argument2 = input_file2]``
+			``arguments = ['argument1 = input_file1','argument2 = input_file2]``
 
 
 Exe

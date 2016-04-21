@@ -4,6 +4,34 @@
 User Guide
 ***********
 
+Execution
+==========
+
+There are two ways for the users to execute the SATLite, namely:
+	1. Command Line Tool
+	2. Use the exposed APIs in the code.
+
+Command Line Tool
+------------------
+To run SATLite using command line tool, users are required to provide scientific tool name, target remote machine and arguments file or a file with the list of input files that are required for the execution of the scientific tool. Users can also provide optional executable name and module file explicitly. They can also provide optional execution runtime range. It is recommended to provide a runtime range so as to enhance the failure reporting. The resulting invocation of SATLite should be:
+
+.. parsed-literal::
+	python satlite_exe.py --name <scientific_tool_name> --resource <target_resource_name> --arguments <argument_file> --exe <Optional_executable> --modules <optional_module_file> --runtime <Optional_runtime_range>
+
+
+Where,
+
+.. parsed-literal::
+	scientific_tool_name = Scientific Tools (Amber, CoCo, Gromacs, LSDMap)
+	target_resource_name = Remote Supercomputer Name (Currently tested on Stampede)
+	argument_file	     = File of list of input files with arguments
+	Optional_executable  = Executable
+	optional_module_file = File with list of modules
+	Optional_runtime_range= Runtime range in format [min_time, max_time] in hh:mm:ss
+
+
+Use the exposed APIs in the code
+---------------------------------
 This section provides a guide for using the APIs exposed to the users. The below mentioned example executes Amber on Stampede.
 
 .. code-block:: python
