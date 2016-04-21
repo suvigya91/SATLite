@@ -11,9 +11,9 @@ if __name__ == "__main__":
     parser.add_argument('--name',action='store', help='Scientific tool name')
     parser.add_argument('--resource',action='store', help='Target machine name')
     parser.add_argument('--arguments', help='Input files with arguments')
-    parser.add_argument('--exe',action='store', help='Executable')
-    parser.add_argument('--modules', help='Modules list file')
-    parser.add_argument('--runtime',action='store', help='Runtime range format: [mintime (hh:mm:ss), maxtime(hh:mm:ss)]')
+    parser.add_argument('--exe',action='store', help='Executable (Optional)')
+    parser.add_argument('--modules', help='Modules list file (Optional)')
+    parser.add_argument('--runtime',action='store', help='(Optional) Runtime range format: [mintime (hh:mm:ss), maxtime(hh:mm:ss)]')
     args = parser.parse_args()
     
     if args.name is None:
