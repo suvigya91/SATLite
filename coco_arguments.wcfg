@@ -1,0 +1,7 @@
+arguments = ['--grid=5',
+             '--dims=3',
+             '--frontpoints=4',
+             '--topfile=/home/suvigya/inp/penta.top',
+             '--mdfile=/home/suvigya/inp/*.ncdf',
+             '--mpi','--selection=protein']
+

@@ -1,0 +1,8 @@
+arguments = ['-O',
+             '-i=/home/suvigya/inp/min.in',
+             '-p=/home/suvigya/inp/penta.top',
+             '-c=/home/suvigya/inp/penta.crd',
+             '-inf=/home/suvigya/inp/min.inf',
+             '-r=/home/suvigya/inp/md.crd',
+             '-ref=/home/suvigya/inp/min.crd']
+

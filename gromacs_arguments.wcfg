@@ -1,0 +1,4 @@
+arguments = ['/home/suvigya/inp/run.py',
+             '--mdp=/home/suvigya/inp/grompp.mdp',
+             '--gro=/home/suvigya/inp/start.gro',
+             '--top=/home/suvigya/inp/topol.top']
