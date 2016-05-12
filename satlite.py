@@ -421,10 +421,10 @@ class SATLite():
         target.close()
 
         self.copyFilesToRemote(self.inp_file,1,"")
-        #self.job_submit()
-        #self.job_check()
-        #self.error_check()
-        #self.cleanup()
+        self.job_submit()
+        self.job_check()
+        self.error_check()
+        self.cleanup()
         if(self.exitcode > 0):
             print(Fore.RED+"Execution failed, Check STDERR file"+Fore.RESET)
             sys.exit(1)
