@@ -195,7 +195,7 @@ class SATLite():
     """
     def loadConfig(self):
         home = expanduser("~")
-        self.home = '%s/SATLite'%home
+        self.home = '%s/workspace/SATLite'%home
         try:
             with open('%s/configs/machine_config.json'%self.home) as data_file:
                 config = json.load(data_file)
