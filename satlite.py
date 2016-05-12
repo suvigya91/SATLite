@@ -106,6 +106,7 @@ class SATLite():
                     #transfer file with argument
                     argument,fname = f.split('=')
                     if not fname.isdigit():
+                        #print fname
                         p = subprocess.Popen(['scp','%s'%fname , '%s@%s:/%s/SATLite/user_files'%(self.uname,self.resource_url,self.wdir)],
                                      stdin=subprocess.PIPE,
                                      stdout=subprocess.PIPE,
@@ -116,12 +117,14 @@ class SATLite():
 
                         if "*" in fname:
                             for files in glob.glob(fname):
-                                #print files
-                                p = subprocess.Popen(['scp','%s'%files , '%s@%s/%s/SATLite/user_files'%(self.uname,self.resource_url,self.wdir)],
+                                print files
+                                p = subprocess.Popen(['scp','%s'%files , '%s@%s:/%s/SATLite/user_files/'%(self.uname,self.resource_url,self.wdir)],
                                              stdin=subprocess.PIPE,
                                              stdout=subprocess.PIPE,
                                              stderr=subprocess.PIPE)
                                 stdout, stderr = p.communicate()
+                                print "stdout: ",stdout
+                                print "stderr: ",stderr
                                 if stderr is "":
                                     print(files+' transferred')
 
@@ -418,10 +421,10 @@ class SATLite():
         target.close()
 
         self.copyFilesToRemote(self.inp_file,1,"")
-        self.job_submit()
-        self.job_check()
-        self.error_check()
-        self.cleanup()
+        #self.job_submit()
+        #self.job_check()
+        #self.error_check()
+        #self.cleanup()
         if(self.exitcode > 0):
             print(Fore.RED+"Execution failed, Check STDERR file"+Fore.RESET)
             sys.exit(1)
