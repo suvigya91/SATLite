@@ -44,8 +44,9 @@ class SATLite():
         self.output_file = None
         self.user_modules = None
         self.runtime_range = None
+        self.no_of_exe=None
 
-    def set_attribute(self,name,resource,arguments,exe=None,modules = None,runtime = None):
+    def set_attribute(self,name,resource,arguments,no_of_exe=1, exe=None,modules = None,runtime = None):
         self.kernel_name = name
         self.resource = resource
         self.inp_file = arguments
@@ -124,7 +125,7 @@ class SATLite():
                                 if stderr is "":
                                     print(files+' transferred')
 
-            p = subprocess.Popen(['scp', '%s/SATLite.slurm'%LOCAL_HOME , '%s@%s:/%s/SATLite/'%(self.uname,self.resource_url,self.wdir)],
+            p = subprocess.Popen(['scp', '%s/SATLite.slurm'%self.home , '%s@%s:/%s/SATLite/'%(self.uname,self.resource_url,self.wdir)],
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -196,7 +197,7 @@ class SATLite():
         home = expanduser("~")
         self.home = '%s/SATLite'%home
         try:
-            with open('%s/configs/machine_config.json'%LOCAL_HOME) as data_file:
+            with open('%s/configs/machine_config.json'%self.home) as data_file:
                 config = json.load(data_file)
 
             Kconfig = imp.load_source('Kconfig','./configs/%s.wcfg'%self.kernel_name)
@@ -259,8 +260,12 @@ class SATLite():
         #Check for job completion
         command = ['ssh','%s@%s'%(self.uname,self.resource_url),'squeue --job', self.job_id]
         state = None
+        flag=0
         print(Fore.GREEN+"Waiting for code to execute..."+Fore.RESET)
         while(state != "CG"):
+            if ((state == "PD") and (flag ==0)):
+                print "Job pending in queue"
+                flag = 1
             p = subprocess.Popen(command,
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
@@ -268,6 +273,8 @@ class SATLite():
             stdout, stderr = p.communicate()
             #print stdout
             for line in stdout.split("\n"):
+                if ("PD") in line:
+                    state = "PD"
                 if ("CG") in line:
                     state = "CG"
                     break
@@ -348,12 +355,12 @@ class SATLite():
     #------------------------------------------------------------------------------------------------------------------
     def cleanup(self):
         #Transfer files from remote to local machine
-        files = glob.glob('%s/Output/*'%LOCAL_HOME)
+        files = glob.glob('%s/Output/*'%self.home)
         for f in files:
             os.remove(f)
 
         print "Transfer output to local machine"
-        p = subprocess.Popen(['scp', '-r', '%s@%s:/%s/SATLite/Output/'%(self.uname,self.resource_url,self.wdir), '%s/'%LOCAL_HOME ],
+        p = subprocess.Popen(['scp', '-r', '%s@%s:/%s/SATLite/Output/'%(self.uname,self.resource_url,self.wdir), '%s/'%self.home ],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)

@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument('--arguments', help='Input files with arguments')
     parser.add_argument('--exe',action='store', help='Executable (Optional)')
     parser.add_argument('--modules', help='Modules list file (Optional)')
-    parser.add_argument('--runtime',action='store', help='(Optional) Runtime range format: [mintime (hh:mm:ss), maxtime(hh:mm:ss)]')
+    parser.add_argument('--runtime',action='store', nargs='*',help='(Optional) Runtime range format: [mintime (hh:mm:ss), maxtime(hh:mm:ss)]')
     args = parser.parse_args()
     
     if args.name is None:
@@ -35,11 +35,14 @@ if __name__ == "__main__":
     
     if args.modules is not None:
         inp_modules = imp.load_source('modules', args.modules)
-        inp_modules_list = inp_modules.arguments
+        inp_modules_list = inp_modules.modules
 
     else:
         inp_modules_list = None
 
+    
+##    print args.runtime
+##    print len(args.runtime)
 ##    print args.name
 ##    print args.resource
 ##    print args.arguments
