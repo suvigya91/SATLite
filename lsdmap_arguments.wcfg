@@ -1,5 +1,5 @@
-arguments = ['-f=/home/suvigya/inp/config.ini',
-             '-w=/home/suvigya/inp/weight.w',
-             '-c=/home/suvigya/inp/tmp.gro',
-             '-n=/home/suvigya/inp/out.nn']
+arguments = ['-f=inp/config.ini',
+             '-w=inp/weight.w',
+             '-c=inp/tmp.gro',
+             '-n=inp/out.nn']
 
