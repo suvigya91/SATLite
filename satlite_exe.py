@@ -41,7 +41,7 @@ if __name__ == "__main__":
     for i in range(length):
         print i
         print args.arguments[i]
-        inp_arguments = imp.load_source(args.arguments[i], args.arguments[i])
+        inp_arguments = imp.load_source('argument', args.arguments[i])
         arg[i]=inp_arguments.arguments
 
     #print arg
