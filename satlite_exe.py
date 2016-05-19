@@ -10,8 +10,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--name',action='store', help='Scientific tool name')
     parser.add_argument('--resource',action='store', help='Target machine name')
-    parser.add_argument('--arguments', help='Input files with arguments')
-    parser.add_argument('--exe',action='store', help='Executable (Optional)')
+    parser.add_argument('--exe',action='store', nargs='*', help='Executable (Optional)')
+    parser.add_argument('--arguments',action='store', nargs='*', help='Input files with arguments')
     parser.add_argument('--modules', help='Modules list file (Optional)')
     parser.add_argument('--runtime',action='store', nargs='*',help='(Optional) Runtime range format: [mintime (hh:mm:ss), maxtime(hh:mm:ss)]')
     args = parser.parse_args()
@@ -30,8 +30,21 @@ if __name__ == "__main__":
     
     scientific_tool = args.name
     inp_resource = args.resource
-    
-    inp_arguments = imp.load_source('arguments', args.arguments)
+
+    if args.exe is None:
+        length = 1
+    else:
+        length = len(args.exe)
+        
+    arg =[0]*length
+    print length
+    for i in range(length):
+        print i
+        print args.arguments[i]
+        inp_arguments = imp.load_source(args.arguments[i], args.arguments[i])
+        arg[i]=inp_arguments.arguments
+
+    #print arg
     
     if args.modules is not None:
         inp_modules = imp.load_source('modules', args.modules)
@@ -51,7 +64,7 @@ if __name__ == "__main__":
     test = SATLite()
     test.set_attribute(name = args.name,
                        resource = args.resource,
-                       arguments = inp_arguments.arguments,
+                       arguments = arg,
                        exe = args.exe,
                        modules = inp_modules_list,
                        runtime = args.runtime

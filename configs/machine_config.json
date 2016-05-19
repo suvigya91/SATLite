@@ -17,10 +17,10 @@
 		}
 	},
 	"kernal_configs":{
-		"coco":{"executable"  : "pyCoCo"},
-		"amber":{"executable" : "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander"},
-		"gromacs":{"executable"  : "python"},
-		"lsdmap":{"executable"  : "lsdmap"}
+		"coco":{"executable"  : ["pyCoCo"]},
+		"amber":{"executable" : ["/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander"]},
+		"gromacs":{"executable"  : ["python"]},
+		"lsdmap":{"executable"  : ["lsdmap"]}
 
 	}
 }

@@ -11,18 +11,16 @@
 #SBATCH --mail-type=end
 
 
-### coco testing ###
+### lsdmap testing ###
 
 ## ENVIRONMENT
-export PYTHONPATH=/opt/apps/intel13/mvapich2_1_9/python/2.7.9/lib/python2.7/site-packages:/work/02998/ardi/coco_installation/lib/python2.7/site-packages:$PYTHONPATH
-export PATH=/work/02998/ardi/coco_installation/bin:$PATH
+export PYTHONPATH=/home1/03036/jp43/.local/lib/python2.7/site-packages
+export PATH=/home1/03036/jp43/.local/bin:$PATH
 
 ## EXEC
 module load TACC
-module load intel/13.0.2.146
-module load python/2.7.9
-module load netcdf/4.3.2
-module load hdf5/1.8.13
+module load -intel +intel/14.0.1.106
+module load python/2.7.6
 
 
-ibrun pyCoCo --grid 5 --dims 3 --frontpoints 4 --topfile ${HOME}/SATLite/user_files/penta.top --mdfile ${HOME}/SATLite/user_files/*.ncdf --mpi --selection protein --output ${HOME}/SATLite/Output/pdbs --logfile ${HOME}/SATLite/Output/coco.log 
+ lsdmap -f ${HOME}/SATLite/user_files/config.ini -w ${HOME}/SATLite/user_files/weight.w -c ${HOME}/SATLite/user_files/tmp.gro -n ${HOME}/SATLite/user_files/out.nn 

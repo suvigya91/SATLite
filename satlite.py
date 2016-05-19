@@ -44,15 +44,23 @@ class SATLite():
         self.output_file = None
         self.user_modules = None
         self.runtime_range = None
-        self.no_of_exe=None
+        self.no_exe=None
 
-    def set_attribute(self,name,resource,arguments,no_of_exe=1, exe=None,modules = None,runtime = None):
+    def set_attribute(self,name,resource,arguments,exe=None,modules = None,runtime = None):
         self.kernel_name = name
         self.resource = resource
         self.inp_file = arguments
         self.user_modules = modules
         self.exe = exe
+        print "----"
+        print self.inp_file
+        print arguments
+        print "----"
         self.runtime_range = runtime
+        if exe is None:
+            self.no_exe = 1
+        else:
+            self.no_exe = len(exe)
         
     ###################################################################################################
     def copyFilesToRemote(self, inp_files, stage, module):
@@ -91,42 +99,45 @@ class SATLite():
             p = subprocess.Popen(['ssh','%s@%s'%(self.uname,self.resource_url),'mkdir -p SATLite/user_files'])
             stdout, stderr = p.communicate()
 
-            for f in inp_files:
-                #Transfer files without argument
-                if ('=' not in f and '/' in f):
-                    p = subprocess.Popen(['scp','%s'%f , '%s@%s:/%s/SATLite/user_files'%(self.uname,self.resource_url,self.wdir)],
-                                            stdin=subprocess.PIPE,
-                                            stdout=subprocess.PIPE,
-                                            stderr=subprocess.PIPE)
-                    stdout, stderr = p.communicate()
-                    if stderr is "":
-                        print(f+' transferred')
-                
-                elif '=' in f:
-                    #transfer file with argument
-                    argument,fname = f.split('=')
-                    if not fname.isdigit():
-                        #print fname
-                        p = subprocess.Popen(['scp','%s'%fname , '%s@%s:/%s/SATLite/user_files'%(self.uname,self.resource_url,self.wdir)],
-                                     stdin=subprocess.PIPE,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+            for i in range(self.no_exe):
+                for f in inp_files[i]:
+                    #Transfer files without argument
+                    
+                    if ('=' not in f and '/' in f):
+                        
+                        p = subprocess.Popen(['scp','%s'%f , '%s@%s:/%s/SATLite/user_files'%(self.uname,self.resource_url,self.wdir)],
+                                                stdin=subprocess.PIPE,
+                                                stdout=subprocess.PIPE,
+                                                stderr=subprocess.PIPE)
                         stdout, stderr = p.communicate()
                         if stderr is "":
-                            print fname, 'transferred'
+                            print(f+' transferred')
+                    
+                    elif '=' in f:
+                        #transfer file with argument
+                        argument,fname = f.split('=')
+                        if not fname.isdigit():
+                            #print fname
+                            p = subprocess.Popen(['scp','%s'%fname , '%s@%s:/%s/SATLite/user_files'%(self.uname,self.resource_url,self.wdir)],
+                                         stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE)
+                            stdout, stderr = p.communicate()
+                            if stderr is "":
+                                print fname, 'transferred'
 
-                        if "*" in fname:
-                            for files in glob.glob(fname):
-                                print files
-                                p = subprocess.Popen(['scp','%s'%files , '%s@%s:/%s/SATLite/user_files/'%(self.uname,self.resource_url,self.wdir)],
-                                             stdin=subprocess.PIPE,
-                                             stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE)
-                                stdout, stderr = p.communicate()
-                                print "stdout: ",stdout
-                                print "stderr: ",stderr
-                                if stderr is "":
-                                    print(files+' transferred')
+                            if "*" in fname:
+                                for files in glob.glob(fname):
+                                    print files
+                                    p = subprocess.Popen(['scp','%s'%files , '%s@%s:/%s/SATLite/user_files/'%(self.uname,self.resource_url,self.wdir)],
+                                                 stdin=subprocess.PIPE,
+                                                 stdout=subprocess.PIPE,
+                                                 stderr=subprocess.PIPE)
+                                    stdout, stderr = p.communicate()
+                                    print "stdout: ",stdout
+                                    print "stderr: ",stderr
+                                    if stderr is "":
+                                        print(files+' transferred')
 
             p = subprocess.Popen(['scp', '%s/SATLite.slurm'%self.home , '%s@%s:/%s/SATLite/'%(self.uname,self.resource_url,self.wdir)],
                             stdin=subprocess.PIPE,
@@ -167,28 +178,35 @@ class SATLite():
             slurm_script += "%s\n" % mod
 
         #print "Execution test"
-        slurm_script += "\n\nibrun %s "%self.exe
+        if self.exe is None:
+            length = 1
+        else:
+            length = len(self.exe)
+        print "length:",self.no_exe
+        
+        for i in range(self.no_exe):
+            slurm_script += "\n\n %s "%self.exe[i]
 
-        for f in inp_files:
-            if (('=' not in f) and ('/' not in f)):
-                slurm_script += "%s "%f
+            for f in inp_files[i]:
+                if (('=' not in f) and ('/' not in f)):
+                    slurm_script += "%s "%f
 
-            elif (('=' not in f) and ('/' in f)):
-                slurm_script += "%s/user_files/%s "%(pwd,os.path.basename(f))
-            else:
-                argument, fname = f.split('=') 
-                if ((fname.isdigit()) or ('/' not in fname)):
-                    slurm_script += "%s %s "%(argument,fname)
-                    
-                elif '=' in f:
-                    slurm_script += "%s %s/user_files/%s "%(argument,pwd,os.path.basename(fname))
+                elif (('=' not in f) and ('/' in f)):
+                    slurm_script += "%s/user_files/%s "%(pwd,os.path.basename(f))
+                else:
+                    argument, fname = f.split('=') 
+                    if ((fname.isdigit()) or ('/' not in fname)):
+                        slurm_script += "%s %s "%(argument,fname)
+                        
+                    elif '=' in f:
+                        slurm_script += "%s %s/user_files/%s "%(argument,pwd,os.path.basename(fname))
 
-        if self.output_file is not None:
-            for f in self.output_file:
-                argument, fname = f.split('=') 
-                slurm_script += "%s %s/Output/%s "%(argument,pwd,os.path.basename(fname))
+            if self.output_file is not None:
+                for f in self.output_file:
+                    argument, fname = f.split('=') 
+                    slurm_script += "%s %s/Output/%s "%(argument,pwd,os.path.basename(fname))
 
-        slurm_script += "\n"
+            slurm_script += "\n"
             
         return slurm_script
 
@@ -202,13 +220,31 @@ class SATLite():
         try:
             with open('%s/configs/machine_config.json'%self.home) as data_file:
                 config = json.load(data_file)
-
-            Kconfig = imp.load_source('Kconfig','./configs/%s.wcfg'%self.kernel_name)
-            m_cfg = config["machine_configs"][self.resource]
-            k_cfg = config["kernal_configs"][self.kernel_name]
+            print self.kernel_name
+            if self.kernel_name in config["kernal_configs"]:
+                print 'true'
+                k_cfg = config["kernal_configs"][self.kernel_name]
+                Kconfig = imp.load_source('Kconfig','./configs/%s.wcfg'%self.kernel_name)
+                if self.exe is None:
+                    self.exe = 0
+                    self.exe = k_cfg["executable"]
+                if self.user_modules is None:    
+                    self.pre_exec = Kconfig.stampede_module
+                else:
+                    self.pre_exec = self.user_modules
+    
+                self.environment = Kconfig.stampede_environment
+                #self.module_test_file = Kconfig.module_test_file
+                self.output_file = Kconfig.output_file
+                #self.param = Kconfig.param
+                #self.module_stage_cmd = Kconfig.stage_module_load
+            else:
+                print 'false'       
+            
 
             #-------------------------------------------------------
             #Machine configs
+            m_cfg = config["machine_configs"][self.resource]
             self.wdir = m_cfg["working_dir"]
             self.resource_url = m_cfg["resource_url"]
             self.wall_time_limit = m_cfg["wall_time"]
@@ -218,19 +254,8 @@ class SATLite():
 
             #-------------------------------------------------------
             #Kernal config
-            if self.exe is None:
-                self.exe = k_cfg["executable"]
 
-            if self.user_modules is None:    
-                self.pre_exec = Kconfig.stampede_module
-            else:
-                self.pre_exec = self.user_modules
                 
-            self.environment = Kconfig.stampede_environment
-            #self.module_test_file = Kconfig.module_test_file
-            self.output_file = Kconfig.output_file
-            #self.param = Kconfig.param
-            #self.module_stage_cmd = Kconfig.stage_module_load
         except Exception:
             print 'error'
             raise
@@ -400,14 +425,15 @@ class SATLite():
         print(Fore.GREEN+"*            Module Test: "+self.kernel_name+"        *"+Fore.RESET)
         print(Fore.GREEN+"*        Checking on: "+self.resource+"     *"+Fore.RESET)
         print(Fore.GREEN+"******************************************"+Fore.RESET)
-        slurm_script = self.generateSlurm(self.inp_file)
-#        print self.user_modules
-        if self.user_modules is None:
-            print(Fore.YELLOW+"No user modules found! Using default modules"+Fore.RESET)
-            self.copyFilesToRemote(self.inp_file,0,self.pre_exec)
-        else:
-            print(Fore.YELLOW+"Using user modules")
-            self.copyFilesToRemote(self.inp_file,0,self.user_modules)
+##        slurm_script = self.generateSlurm(self.inp_file)
+##        print self.exe
+###        print self.user_modules
+##        if self.user_modules is None:
+##            print(Fore.YELLOW+"No user modules found! Using default modules"+Fore.RESET)
+##            self.copyFilesToRemote(self.inp_file,0,self.pre_exec)
+##        else:
+##            print(Fore.YELLOW+"Using user modules")
+##            self.copyFilesToRemote(self.inp_file,0,self.user_modules)
 
 ##        #---------------------------------------------------------------------------------------------------------
         print(Fore.GREEN+"\n******************************************"+Fore.RESET)

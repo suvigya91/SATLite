@@ -6,6 +6,18 @@ from satlite import SATLite
 
 if __name__ == "__main__":
     test = SATLite()
+    arg =[[0]*10 for i in range(10)]
+    arg[0]=['--grid=5',
+                                   '--dims=3',
+                                   '--frontpoints=4',
+                                   '--topfile=inp/penta.top',
+                                   '--mdfile=inp/*.ncdf',
+                                   '--mpi','--selection=protein']
+    arg[1]=['/home/suvigya/inp/run.py',
+                                   '--mdp=/home/suvigya/inp/grompp.mdp',
+                                   '--gro=/home/suvigya/inp/start.gro',
+                                   '--top=/home/suvigya/inp/topol.top']
+    
     test.set_attribute(name = 'coco',
                     resource = 'xsede.stampede',
                       #amber
@@ -24,14 +36,15 @@ if __name__ == "__main__":
 ##                                   '--top=/home/suvigya/inp/topol.top']
 
                       #Executable optional
-                      # exe = sander
+                      #exe = 'sander',
                       #coco
-                      arguments = ['--grid=5',
-                                   '--dims=3',
-                                   '--frontpoints=4',
-                                   '--topfile=inp/penta.top',
-                                   '--mdfile=inp/*.ncdf',
-                                   '--mpi','--selection=protein']
+                         arguments = arg,
+##                      arguments = ['--grid=5',
+##                                   '--dims=3',
+##                                   '--frontpoints=4',
+##                                   '--topfile=inp/penta.top',
+##                                   '--mdfile=inp/*.ncdf',
+##                                   '--mpi','--selection=protein']
                        
                       #amber modules optional
 ##                    modules = ["module load TACC",
