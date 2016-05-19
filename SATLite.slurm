@@ -11,9 +11,11 @@
 #SBATCH --mail-type=end
 
 
-### amber testing ###
+### coco testing ###
 
 ## ENVIRONMENT
+export PYTHONPATH=/opt/apps/intel13/mvapich2_1_9/python/2.7.9/lib/python2.7/site-packages:/work/02998/ardi/coco_installation/lib/python2.7/site-packages:$PYTHONPATH
+export PATH=/work/02998/ardi/coco_installation/bin:$PATH
 
 ## EXEC
 module load TACC
@@ -23,4 +25,4 @@ module load netcdf/4.3.2
 module load hdf5/1.8.13
 
 
-ibrun /opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander -O -i ${HOME}/SATLite/user_files/min.in -p ${HOME}/SATLite/user_files/penta.top -c ${HOME}/SATLite/user_files/penta.crd -inf ${HOME}/SATLite/user_files/min.inf -r ${HOME}/SATLite/user_files/md.crd -ref ${HOME}/SATLite/user_files/min.crd -o ${HOME}/SATLite/Output/min.out 
+ibrun pyCoCo --grid 5 --dims 3 --frontpoints 4 --topfile ${HOME}/SATLite/user_files/penta.top --mdfile ${HOME}/SATLite/user_files/*.ncdf --mpi --selection protein --output ${HOME}/SATLite/Output/pdbs --logfile ${HOME}/SATLite/Output/coco.log 

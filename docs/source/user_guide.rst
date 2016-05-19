@@ -27,7 +27,7 @@ Where,
 	argument_file	     = File of list of input files with arguments
 	Optional_executable  = Executable
 	optional_module_file = File with list of modules
-	Optional_runtime_range= Runtime range in format [min_time, max_time] in hh:mm:ss
+	Optional_runtime_range= Runtime range in format {"min_time", "max_time"} in hh:mm:ss
 
 
 Use the exposed APIs in the code
