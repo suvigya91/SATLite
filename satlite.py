@@ -425,15 +425,15 @@ class SATLite():
         print(Fore.GREEN+"*            Module Test: "+self.kernel_name+"        *"+Fore.RESET)
         print(Fore.GREEN+"*        Checking on: "+self.resource+"     *"+Fore.RESET)
         print(Fore.GREEN+"******************************************"+Fore.RESET)
-##        slurm_script = self.generateSlurm(self.inp_file)
-##        print self.exe
-###        print self.user_modules
-##        if self.user_modules is None:
-##            print(Fore.YELLOW+"No user modules found! Using default modules"+Fore.RESET)
-##            self.copyFilesToRemote(self.inp_file,0,self.pre_exec)
-##        else:
-##            print(Fore.YELLOW+"Using user modules")
-##            self.copyFilesToRemote(self.inp_file,0,self.user_modules)
+        slurm_script = self.generateSlurm(self.inp_file)
+        print self.exe
+#        print self.user_modules
+        if self.user_modules is None:
+            print(Fore.YELLOW+"No user modules found! Using default modules"+Fore.RESET)
+            self.copyFilesToRemote(self.inp_file,0,self.pre_exec)
+        else:
+            print(Fore.YELLOW+"Using user modules")
+            self.copyFilesToRemote(self.inp_file,0,self.user_modules)
 
 ##        #---------------------------------------------------------------------------------------------------------
         print(Fore.GREEN+"\n******************************************"+Fore.RESET)
